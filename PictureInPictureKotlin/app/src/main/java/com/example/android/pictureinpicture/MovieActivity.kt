@@ -196,10 +196,10 @@ class MovieActivity : AppCompatActivity() {
             .setAspectRatio(aspectRatio)
             // Specify the portion of the screen that turns into the picture-in-picture mode.
             // This makes the transition animation smoother.
-            .setSourceRectHint(visibleRect)
+//            .setSourceRectHint(visibleRect)
             // The screen automatically turns into the picture-in-picture mode when it is hidden
             // by the "Home" button.
-            .setAutoEnterEnabled(true)
+//            .setAutoEnterEnabled(true)
             .build()
         setPictureInPictureParams(params)
         return params
@@ -209,6 +209,11 @@ class MovieActivity : AppCompatActivity() {
      * Enters Picture-in-Picture mode.
      */
     private fun minimize() {
+        enterPictureInPictureMode(updatePictureInPictureParams())
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
         enterPictureInPictureMode(updatePictureInPictureParams())
     }
 

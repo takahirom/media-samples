@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         }
         binding.switchExample.setOnClickListener {
             startActivity(Intent(this@MainActivity, MovieActivity::class.java))
-            finish()
+//            finish()
         }
         // Observe data from the viewModel.
         viewModel.time.observe(this) { time -> binding.time.text = time }
@@ -152,16 +152,16 @@ class MainActivity : AppCompatActivity() {
                 )
             )
             // Set the aspect ratio of the picture-in-picture mode.
-            .setAspectRatio(Rational(16, 9))
+//            .setAspectRatio(Rational(16, 9))
             // Specify the portion of the screen that turns into the picture-in-picture mode.
             // This makes the transition animation smoother.
-            .setSourceRectHint(visibleRect)
+//            .setSourceRectHint(visibleRect)
             // Turn the screen into the picture-in-picture mode if it's hidden by the "Home" button.
-            .setAutoEnterEnabled(true)
+//            .setAutoEnterEnabled(true)
             // Disables the seamless resize. The seamless resize works great for videos where the
             // content can be arbitrarily scaled, but you can disable this for non-video content so
             // that the picture-in-picture mode is resized with a cross fade animation.
-            .setSeamlessResizeEnabled(false)
+//            .setSeamlessResizeEnabled(false)
             .build()
         setPictureInPictureParams(params)
         return params
