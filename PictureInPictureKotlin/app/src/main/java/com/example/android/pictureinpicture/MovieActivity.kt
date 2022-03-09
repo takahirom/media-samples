@@ -16,7 +16,9 @@
 
 package com.example.android.pictureinpicture
 
+import android.app.ActivityManager
 import android.app.PictureInPictureParams
+import android.content.ComponentName
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Rect
@@ -26,10 +28,10 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.text.util.Linkify
-import android.util.Log
 import android.util.Rational
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.getSystemService
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -213,12 +215,46 @@ class MovieActivity : AppCompatActivity() {
         enterPictureInPictureMode(updatePictureInPictureParams())
     }
 
+    // TODO: Save this to ViewModel
+    private var pipEntered = false
+    private var originalTaskBaseActivityComponentName :ComponentName? = null
     override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
         if (!isInPictureInPictureMode && !isDestroyed && !isFinishing) {
-            enterPictureInPictureMode(updatePictureInPictureParams())
+            val systemService = getSystemService<ActivityManager>()
+            val currentTask = systemService?.appTasks?.firstOrNull {
+                it.taskInfo.id == taskId
+            }
+            if(originalTaskBaseActivityComponentName == null) {
+                // Save activity component name for restore
+                originalTaskBaseActivityComponentName = currentTask?.taskInfo?.baseActivity
+            }
+            pipEntered =
+                enterPictureInPictureMode(updatePictureInPictureParams())
         }
-        Log.d("MovieActivity","isInPictureInPictureMode:$isInPictureInPictureMode isDestroyed:$isDestroyed isFinishing:$isFinishing")
     }
+
+    override fun onBackPressed() {
+        if (!pipEntered) {
+            super.onBackPressed()
+            return
+        }
+        val systemService = getSystemService<ActivityManager>()
+        val movieActivityComponentName = ComponentName(this, MovieActivity::class.java)
+        val currentTask = systemService?.appTasks?.firstOrNull {
+            it.taskInfo.id == taskId
+        }
+        if(currentTask?.taskInfo?.baseActivity != movieActivityComponentName) {
+            super.onBackPressed()
+            return
+        }
+        val originalTask = systemService.appTasks?.firstOrNull {
+            it.taskInfo.baseActivity == originalTaskBaseActivityComponentName
+        }
+        super.onBackPressed()
+        originalTask?.moveToFront()
+    }
+
     /**
      * Adjusts immersive full-screen flags depending on the screen orientation.
 
