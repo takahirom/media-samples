@@ -26,6 +26,7 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.text.util.Linkify
+import android.util.Log
 import android.util.Rational
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -213,10 +214,11 @@ class MovieActivity : AppCompatActivity() {
     }
 
     override fun onUserLeaveHint() {
-        super.onUserLeaveHint()
-        enterPictureInPictureMode(updatePictureInPictureParams())
+        if (!isInPictureInPictureMode && !isDestroyed && !isFinishing) {
+            enterPictureInPictureMode(updatePictureInPictureParams())
+        }
+        Log.d("MovieActivity","isInPictureInPictureMode:$isInPictureInPictureMode isDestroyed:$isDestroyed isFinishing:$isFinishing")
     }
-
     /**
      * Adjusts immersive full-screen flags depending on the screen orientation.
 
